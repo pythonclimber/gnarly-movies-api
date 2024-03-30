@@ -37,10 +37,3 @@ jobs:
 
     - name: Commit changes to repo
       uses: stefanzweifel/git-auto-commit-action@v5
-#    - name: Commit deployment file changes
-#      run: |
-#        git config --global user.name github-actions
-#        git config --global user.email github-actions@github.com
-#        git add .
-#        git commit -m "Update deployment json file"
-#        git push

@@ -5,7 +5,7 @@ app = Chalice(app_name='movie_api')
 
 @app.route('/')
 def index():
-    return {'hello': 'world'}
+    return {'hello': 'aaron'}
 
 
 # The view function above will return {"hello": "world"}
