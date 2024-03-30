@@ -26,20 +26,21 @@ jobs:
       run: |
         pip install -r requirements.txt --user
 
-
     - name: chalice deploy
       run: |
         cd src/movie_api
         chalice deploy
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: us-east-1
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
 
-    - name: Commit deployment file changes
-      run: |
-        git config --global user.name github-actions
-        git config --global user.email github-actions@github.com
-        git add .
-        git commit -m "Update deployment json file"
-        git push
+    - name: Commit changes to repo
+      uses: stefanzweifel/git-auto-commit-action@v5
+#    - name: Commit deployment file changes
+#      run: |
+#        git config --global user.name github-actions
+#        git config --global user.email github-actions@github.com
+#        git add .
+#        git commit -m "Update deployment json file"
+#        git push
