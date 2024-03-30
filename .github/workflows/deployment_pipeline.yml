@@ -4,7 +4,7 @@ name: Deploy API
 on:
   push:
     branches:
-      - master
+      - main
 
 
 jobs:
