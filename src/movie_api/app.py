@@ -1,8 +1,9 @@
+import json
 import os
 
 import certifi
 import pymongo
-from bson import ObjectId
+from bson import json_util
 from chalice import Chalice
 from dotenv import load_dotenv, find_dotenv
 
@@ -21,7 +22,7 @@ def get_movie(user_id):
 
 @app.route('/movie/{user_id}', methods=['GET'])
 def index(user_id):
-    return get_movie(user_id)
+    return json.loads(json_util.dumps(get_movie(user_id)))
 
 
 # The view function above will return {"hello": "world"}
