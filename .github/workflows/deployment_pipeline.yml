@@ -30,6 +30,9 @@ jobs:
       run: |
         cd src/movie_api
         chalice deploy
+        aws lambda update-function-configuration \
+          --function-name movie_api-dev \
+          --environment "Variables={CONNECTION_STRING=${{ secrets.CONNECTION_STRING }}}"
       env:
         AWS_DEFAULT_REGION: us-east-1
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
