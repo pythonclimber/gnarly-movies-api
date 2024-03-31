@@ -1,11 +1,27 @@
-from chalice import Chalice
+import os
 
+import certifi
+import pymongo
+from bson import ObjectId
+from chalice import Chalice
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
 
 
-@app.route('/')
-def index():
-    return {'hello': 'aaron'}
+def get_movie(user_id):
+    client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+    try:
+        db = client.ohgnarly
+        return list(db.Movies.find({'userId': user_id}))
+    finally:
+        client.close()
+
+
+@app.route('/movie/{user_id}', methods=['GET'])
+def index(user_id):
+    return get_movie(user_id)
 
 
 # The view function above will return {"hello": "world"}
