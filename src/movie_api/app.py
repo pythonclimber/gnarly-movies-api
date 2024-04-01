@@ -48,9 +48,14 @@ def get_movie(user_id, imdb_id):
 
 @app.route('/movies/{user_id}', methods=['GET'])
 def get_movies(user_id):
-    return json_util.dumps(get_movies(user_id))
+    return json_util.dumps(find_movies(user_id))
 
 
 @app.route('/movie-formats', methods=['GET'])
 def get_formats():
     return list(formats.values())
+
+
+@app.route('/movie-details/{online_id}', methods=['GET'])
+def get_movie_details(online_id):
+    pass
