@@ -6,9 +6,11 @@ import pymongo
 from bson import json_util
 from chalice import Chalice
 from dotenv import load_dotenv, find_dotenv
+from imdb import Cinemagoer
 
 load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
+imdb_api = Cinemagoer()
 formats = {
     'DVD': 'DVD',
     'Bluray': 'Blu-ray',
@@ -41,6 +43,11 @@ def find_movies(user_id):
         client.close()
 
 
+def find_movie_details(imdb_id):
+    imdb_id = imdb_id.replace('tt', '') if imdb_id.startswith('tt') else imdb_id
+    return imdb_api.get_movie(imdb_id)
+
+
 @app.route('/movie/{user_id}/{imdb_id}', methods=['GET'])
 def get_movie(user_id, imdb_id):
     return json.loads(json_util.dumps(get_movie(user_id, imdb_id)))
@@ -56,6 +63,7 @@ def get_formats():
     return list(formats.values())
 
 
-@app.route('/movie-details/{online_id}', methods=['GET'])
-def get_movie_details(online_id):
-    pass
+@app.route('/movie-details/{imdb_id}', methods=['GET'])
+def get_movie_details(imdb_id):
+    return find_movie_details(imdb_id)
+
