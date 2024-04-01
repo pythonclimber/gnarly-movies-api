@@ -1,5 +1,5 @@
-from src.movie_api.app import get_movie
+from src.movie_api.app import get_formats
 
 
-def test_get_movie():
-    print(get_movie('5d9ce112b3608e16726bc0ea', 'tt0468569'))
+def test_get_formats():
+    print((get_formats()))
