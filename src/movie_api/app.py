@@ -11,18 +11,34 @@ load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
 
 
-def get_movie(user_id, imdb_id):
-    client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+def get_client():
+    return pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+
+
+def find_movie(user_id, imdb_id):
+    client = get_client()
     try:
-        db = client.ohgnarly
-        return db.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+        return client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+    finally:
+        client.close()
+
+
+def find_movies(user_id):
+    client = get_client()
+    try:
+        return list(client.ohgnarly.Movies.find({'userId': user_id}))
     finally:
         client.close()
 
 
 @app.route('/movie/{user_id}/{imdb_id}', methods=['GET'])
-def index(user_id, imdb_id):
+def get_movie(user_id, imdb_id):
     return json.loads(json_util.dumps(get_movie(user_id, imdb_id)))
+
+
+@app.route('/movies/{user_id}', methods=['GET'])
+def get_movies(user_id):
+    return json.loads(json_util.dumps(get_movies(user_id)))
 
 
 # The view function above will return {"hello": "world"}
