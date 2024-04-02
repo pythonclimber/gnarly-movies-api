@@ -50,4 +50,4 @@ class Movie:
         movie.rating = db_movie["rating"]
         movie.title = db_movie["title"]
         movie.director = db_movie["director"]
-        return movie
+        return movie.to_dict()
