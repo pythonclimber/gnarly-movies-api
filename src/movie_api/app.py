@@ -8,7 +8,7 @@ from chalice import Chalice
 from dotenv import load_dotenv, find_dotenv
 from imdb import Cinemagoer
 
-from src.movie_api.chalicelib.models import Movie
+from .chalicelib.models import Movie
 
 load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
