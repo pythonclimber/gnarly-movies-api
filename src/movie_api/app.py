@@ -1,9 +1,7 @@
-import json
 import os
 
 import certifi
 import pymongo
-from bson import json_util
 from chalice import Chalice
 from dotenv import load_dotenv, find_dotenv
 from imdb import Cinemagoer
@@ -54,12 +52,12 @@ def find_movie_details(imdb_id):
 
 @app.route('/movie/{user_id}/{imdb_id}', methods=['GET'])
 def get_movie(user_id, imdb_id):
-    return json.loads(json_util.dumps(get_movie(user_id, imdb_id)))
+    return find_movie(user_id, imdb_id)
 
 
 @app.route('/movies/{user_id}', methods=['GET'])
 def get_movies(user_id):
-    return json_util.dumps(find_movies(user_id))
+    return find_movies(user_id)
 
 
 @app.route('/movie-formats', methods=['GET'])
