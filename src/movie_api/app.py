@@ -1,12 +1,13 @@
 import os
+from dataclasses import dataclass, field
+from typing import Optional
 
 import certifi
 import pymongo
 from chalice import Chalice
+from dataclasses_json import dataclass_json, LetterCase
 from dotenv import load_dotenv, find_dotenv
 from imdb import Cinemagoer
-
-from chalicelib.models import Movie
 
 load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
@@ -21,6 +22,42 @@ formats = {
     'DigitalUhd': 'Digital UHD',
     'VHS': 'VHS'
 }
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass
+class Movie:
+    _id: str = field(init=False)
+    title: str = field(init=False)
+    description: str = field(init=False)
+    userId: str = field(init=False)
+    director: str = field(init=False)
+    imdbid: str = field(init=False)
+    favorite: Optional[bool] = field(init=False, default=False)
+    year: Optional[str] = field(init=False, default=None)
+    runtime: Optional[str] = field(init=False, default=None)
+    genres: Optional[str] = field(init=False, default=None)
+    writer: Optional[str] = field(init=False, default=None)
+    actors: Optional[str] = field(init=False, default=None)
+    plot: Optional[str] = field(init=False, default=None)
+    poster: Optional[str] = field(init=False, default=None)
+    wishlist: bool = field(init=False, default=False)
+    format: str = field(init=False, default=None)
+    rating: Optional[int] = field(init=False)
+
+    @classmethod
+    def create_from_db(cls, db_movie):
+        movie = cls()
+        movie._id = str(db_movie['_id'])
+        movie.userId = db_movie["userId"]
+        movie.wishlist = db_movie["wishlist"]
+        movie.format = db_movie["format"]
+        movie.rating = db_movie["rating"]
+        movie.title = db_movie["title"]
+        movie.director = db_movie["director"]
+        movie.description = db_movie["description"]
+        movie.imdbid = db_movie['imdbid']
+        return movie.to_dict()
 
 
 def get_client():
