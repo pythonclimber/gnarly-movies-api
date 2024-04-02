@@ -8,6 +8,8 @@ from chalice import Chalice
 from dotenv import load_dotenv, find_dotenv
 from imdb import Cinemagoer
 
+from src.movie_api.chalicelib.models import Movie
+
 load_dotenv(find_dotenv())
 app = Chalice(app_name='movie_api')
 imdb_api = Cinemagoer()
@@ -30,7 +32,8 @@ def get_client():
 def find_movie(user_id, imdb_id):
     client = get_client()
     try:
-        return client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+        db_movie = client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+        return Movie.create_from_db(db_movie)
     finally:
         client.close()
 
@@ -38,7 +41,8 @@ def find_movie(user_id, imdb_id):
 def find_movies(user_id):
     client = get_client()
     try:
-        return list(client.ohgnarly.Movies.find({'userId': user_id}))
+        db_movies_cursor = client.ohgnarly.Movies.find({'userId': user_id})
+        return list(map(Movie.create_from_db, db_movies_cursor))
     finally:
         client.close()
 
