@@ -27,13 +27,16 @@ formats = {
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class Movie:
-    _id: str = field(init=False)
-    title: str = field(init=False)
-    description: str = field(init=False)
-    userId: str = field(init=False)
-    director: str = field(init=False)
-    imdbid: str = field(init=False)
-    favorite: Optional[bool] = field(init=False, default=False)
+    _id: str = field(default=None)
+    title: str = field(default=None)
+    description: str = field(default=None)
+    userId: str = field(default=None)
+    director: str = field(default=None)
+    imdbid: str = field(default=None)
+    wishlist: bool = field(default=False)
+    format: str = field(default=None)
+    rating: int = field(default=0)
+    favorite: bool = field(init=False, default=False)
     year: Optional[str] = field(init=False, default=None)
     runtime: Optional[str] = field(init=False, default=None)
     genres: Optional[str] = field(init=False, default=None)
@@ -41,23 +44,20 @@ class Movie:
     actors: Optional[str] = field(init=False, default=None)
     plot: Optional[str] = field(init=False, default=None)
     poster: Optional[str] = field(init=False, default=None)
-    wishlist: bool = field(init=False, default=False)
-    format: str = field(init=False, default=None)
-    rating: Optional[int] = field(init=False)
 
     @classmethod
     def create_from_db(cls, db_movie):
-        movie = cls()
-        movie._id = str(db_movie['_id'])
-        movie.userId = db_movie["userId"]
-        movie.wishlist = db_movie["wishlist"]
-        movie.format = db_movie["format"]
-        movie.rating = db_movie["rating"]
-        movie.title = db_movie["title"]
-        movie.director = db_movie["director"]
-        movie.description = db_movie["description"]
-        movie.imdbid = db_movie['imdbid']
-        return movie.to_dict()
+        cls(
+            str(db_movie['_id']),
+            db_movie["title"],
+            db_movie["description"],
+            db_movie["userId"],
+            db_movie["director"],
+            db_movie['imdbid'],
+            db_movie["wishlist"],
+            db_movie["format"],
+            db_movie["rating"],
+        ).to_dict()
 
 
 def get_client():
