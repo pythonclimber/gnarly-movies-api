@@ -1,11 +1,8 @@
 import os
-from dataclasses import dataclass, field
-from typing import Optional
 
 import certifi
 import pymongo
 from chalice import Chalice
-from dataclasses_json import dataclass_json, LetterCase
 from dotenv import load_dotenv, find_dotenv
 from imdb import Cinemagoer
 
@@ -22,10 +19,7 @@ formats = {
     'DigitalUhd': 'Digital UHD',
     'VHS': 'VHS'
 }
-
-
-def get_client():
-    return pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+db_client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
 
 
 def build_movie_response(db_movie):
@@ -43,22 +37,14 @@ def build_movie_response(db_movie):
 
 
 def find_movie(user_id, imdb_id):
-    client = get_client()
-    try:
-        db_movie = client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
-        print(type(db_movie))
-        return build_movie_response(db_movie)
-    finally:
-        client.close()
+    db_movie = db_client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+    print(type(db_movie))
+    return build_movie_response(db_movie)
 
 
 def find_movies(user_id):
-    client = get_client()
-    try:
-        db_movies_cursor = client.ohgnarly.Movies.find({'userId': user_id})
-        return list(map(build_movie_response, db_movies_cursor))
-    finally:
-        client.close()
+    db_movies_cursor = db_client.ohgnarly.Movies.find({'userId': user_id})
+    return list(map(build_movie_response, db_movies_cursor))
 
 
 def find_movie_details(imdb_id):
