@@ -24,51 +24,30 @@ formats = {
 }
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
-@dataclass
-class Movie:
-    _id: str = field(default=None)
-    title: str = field(default=None)
-    description: str = field(default=None)
-    userId: str = field(default=None)
-    director: str = field(default=None)
-    imdbid: str = field(default=None)
-    wishlist: bool = field(default=False)
-    format: str = field(default=None)
-    rating: int = field(default=0)
-    favorite: bool = field(init=False, default=False)
-    year: Optional[str] = field(init=False, default=None)
-    runtime: Optional[str] = field(init=False, default=None)
-    genres: Optional[str] = field(init=False, default=None)
-    writer: Optional[str] = field(init=False, default=None)
-    actors: Optional[str] = field(init=False, default=None)
-    plot: Optional[str] = field(init=False, default=None)
-    poster: Optional[str] = field(init=False, default=None)
-
-    @classmethod
-    def create_from_db(cls, db_movie):
-        return cls(
-            str(db_movie['_id']),
-            db_movie["title"],
-            db_movie["description"],
-            db_movie["userId"],
-            db_movie["director"],
-            db_movie['imdbid'],
-            db_movie["wishlist"],
-            db_movie["format"],
-            db_movie["rating"],
-        ).to_dict()
-
-
 def get_client():
     return pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+
+
+def build_movie_response(db_movie):
+    return {
+        "_id": str(db_movie["_id"]),
+        "title": db_movie["title"],
+        "description": db_movie["description"],
+        "userId": db_movie["userId"],
+        "director": db_movie["director"],
+        "imdbid": db_movie["imdbid"],
+        "wishlist": db_movie["wishlist"],
+        "format": db_movie["format"],
+        "rating": db_movie["rating"],
+    }
 
 
 def find_movie(user_id, imdb_id):
     client = get_client()
     try:
         db_movie = client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
-        return Movie.create_from_db(db_movie)
+        print(type(db_movie))
+        return build_movie_response(db_movie)
     finally:
         client.close()
 
@@ -77,7 +56,7 @@ def find_movies(user_id):
     client = get_client()
     try:
         db_movies_cursor = client.ohgnarly.Movies.find({'userId': user_id})
-        return list(map(Movie.create_from_db, db_movies_cursor))
+        return list(map(build_movie_response, db_movies_cursor))
     finally:
         client.close()
 
