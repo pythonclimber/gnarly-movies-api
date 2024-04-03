@@ -47,7 +47,7 @@ class Movie:
 
     @classmethod
     def create_from_db(cls, db_movie):
-        cls(
+        return cls(
             str(db_movie['_id']),
             db_movie["title"],
             db_movie["description"],
