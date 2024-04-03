@@ -19,7 +19,23 @@ formats = {
     'DigitalUhd': 'Digital UHD',
     'VHS': 'VHS'
 }
-db_client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+
+
+class DbClient:
+    _client = None
+
+    @staticmethod
+    def get_instance():
+        if not DbClient._client:
+            DbClient()
+
+        return DbClient._client
+
+    def __init__(self):
+        if self._client is not None:
+            raise ValueError("This class is a singleton")
+        else:
+            self._client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
 
 
 def build_movie_response(db_movie):
@@ -37,13 +53,15 @@ def build_movie_response(db_movie):
 
 
 def find_movie(user_id, imdb_id):
-    db_movie = db_client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
+    client = DbClient.get_instance()
+    db_movie = client.ohgnarly.Movies.find_one({'userId': user_id, 'imdbid': imdb_id})
     print(type(db_movie))
     return build_movie_response(db_movie)
 
 
 def find_movies(user_id):
-    db_movies_cursor = db_client.ohgnarly.Movies.find({'userId': user_id})
+    client = DbClient.get_instance()
+    db_movies_cursor = client.ohgnarly.Movies.find({'userId': user_id})
     return list(map(build_movie_response, db_movies_cursor))
 
 
