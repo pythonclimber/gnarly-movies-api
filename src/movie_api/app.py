@@ -32,10 +32,10 @@ class DbClient:
         return DbClient._client
 
     def __init__(self):
-        if self._client is not None:
+        if DbClient._client is not None:
             raise ValueError("This class is a singleton")
         else:
-            self._client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
+            DbClient._client = pymongo.MongoClient(os.environ['CONNECTION_STRING'], tlsCAFile=certifi.where())
 
 
 def build_movie_response(db_movie):
